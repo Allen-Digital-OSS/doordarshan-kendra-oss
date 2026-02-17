@@ -6,20 +6,6 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// PipelineCommandType defines the type of pipeline command
-type PipelineCommandType string
-
-const (
-	PipelineGet     PipelineCommandType = "GET"
-	PipelineHGetAll PipelineCommandType = "HGETALL"
-)
-
-// PipelineCommand represents a command to be executed in a pipeline
-type PipelineCommand struct {
-	Type PipelineCommandType
-	Key  string
-}
-
 // redisRepository is the private repository type to store redis client.
 type redisRepository struct {
 	ruc       redis.UniversalClient

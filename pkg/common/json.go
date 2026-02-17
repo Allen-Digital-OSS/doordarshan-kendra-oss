@@ -15,13 +15,3 @@ func ToJSONString(v interface{}) (string, error) {
 	}
 	return string(b), nil
 }
-
-// FromJSONString converts the given JSON string to object.
-func FromJSONString(s string, v interface{}) error {
-	err := json.Unmarshal([]byte(s), v)
-	if err != nil {
-		log.Errorf("[FromJSONString] Error when trying to unmarshal the string: %s error: %v", s, err)
-		return err
-	}
-	return nil
-}

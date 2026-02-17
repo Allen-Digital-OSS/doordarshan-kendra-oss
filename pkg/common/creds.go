@@ -20,17 +20,3 @@ func GetUsernameAndPasswordFromCredFile(filename string) (username, password str
 	password = viper.GetString("password")
 	return username, password, nil
 }
-
-// GetJWTSecretFromCredFile reads the jwt secret from the given file.
-func GetJWTSecretFromCredFile(filename string) (jwtSecret string, err error) {
-	viper.SetConfigFile(filename)
-	viper.SetConfigType("json")
-	err = viper.ReadInConfig()
-
-	if err != nil {
-		return constant.EmptyStr, fmt.Errorf("error reading secret file, %w", err)
-	}
-
-	jwtSecret = viper.GetString("jwt_secret")
-	return jwtSecret, nil
-}
