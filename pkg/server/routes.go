@@ -1,14 +1,18 @@
 package server
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/handler"
 	"github.com/labstack/echo/v4"
 )
 
 // SetupRoutes sets up routes for the server.
 func (s *Server) SetupRoutes() {
+	// Return swagger UI at root path for easy access
 	s.e.GET("/", func(c echo.Context) error {
-		return c.String(200, "Doordarshan Kendra")
+		return c.Redirect(302, "/swagger")
 	})
 	s.e.GET("/health", handler.HealthProbe)
 
@@ -39,4 +43,48 @@ func (s *Server) SetupRoutes() {
 	s.e.POST("/v1/preMeetingDetails", s.meetingV1handler.PreMeetingDetails)
 	s.e.POST("/v1/activeContainer", s.meetingV1handler.GetActiveContainerOfMeeting)
 
+	// Swagger UI routes
+	s.setupSwaggerRoutes()
+}
+
+// setupSwaggerRoutes sets up routes for Swagger UI documentation
+func (s *Server) setupSwaggerRoutes() {
+	// Try to find the docs directory relative to the current working directory
+	// First try "docs", then "../docs" (if running from cmd/ directory)
+	var docsDir string
+	wd, err := os.Getwd()
+	if err == nil {
+		// Try docs in current directory
+		if _, err := os.Stat(filepath.Join(wd, "docs", "swagger-ui.html")); err == nil {
+			docsDir = filepath.Join(wd, "docs")
+		} else if _, err := os.Stat(filepath.Join(wd, "..", "docs", "swagger-ui.html")); err == nil {
+			// Try ../docs (if running from cmd/ directory)
+			docsDir = filepath.Join(wd, "..", "docs")
+		} else {
+			// Fallback to relative path
+			docsDir = "docs"
+		}
+	} else {
+		docsDir = "docs"
+	}
+
+	// Serve Swagger UI HTML
+	s.e.GET("/swagger", func(c echo.Context) error {
+		return c.File(filepath.Join(docsDir, "swagger-ui.html"))
+	})
+	s.e.GET("/swagger-ui", func(c echo.Context) error {
+		return c.File(filepath.Join(docsDir, "swagger-ui.html"))
+	})
+
+	// Serve Swagger YAML specification
+	s.e.GET("/swagger.yaml", func(c echo.Context) error {
+		c.Response().Header().Set(echo.HeaderContentType, "application/x-yaml")
+		return c.File(filepath.Join(docsDir, "swagger.yaml"))
+	})
+
+	// Serve Swagger JSON specification (optional)
+	s.e.GET("/swagger.json", func(c echo.Context) error {
+		c.Response().Header().Set(echo.HeaderContentType, "application/json")
+		return c.File(filepath.Join(docsDir, "swagger.json"))
+	})
 }
