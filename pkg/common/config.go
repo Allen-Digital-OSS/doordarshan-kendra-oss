@@ -8,19 +8,13 @@ import (
 )
 
 type ServerConfig struct {
-	Name                                 string   `mapstructure:"SERVER_NAME"`
-	Port                                 int      `mapstructure:"SERVER_PORT"`
-	LogLevel                             string   `mapstructure:"SERVER_LOG_LEVEL"`
-	ReadTimeoutInSeconds                 int      `mapstructure:"SERVER_READ_TIMEOUT_IN_SECONDS"`
-	WriteTimeoutInSeconds                int      `mapstructure:"SERVER_WRITE_TIMEOUT_IN_SECONDS"`
-	MaxHeaderBytes                       int      `mapstructure:"SERVER_MAX_HEADER_BYTES"`
-	CORSOrigins                          []string `mapstructure:"SERVER_CORS_ALLOWED_ORIGINS"`
-	JWTCredentialsSecretFile             string   `mapstructure:"SERVER_JWT_CREDENTIALS_SECRET_FILE_PATH"`
-	JWTSecret                            string   `mapstructure:"SERVER_JWT_SECRET"`
-	AWSAppConfigAppID                    string   `mapstructure:"SERVER_AWS_APP_CONFIG_APP_ID"`
-	AWSAppConfigNamespace                string   `mapstructure:"SERVER_AWS_APP_CONFIG_NAME"`
-	AWSAppConfigPollingIntervalInSeconds int      `mapstructure:"SERVER_AWS_APP_CONFIG_POLLING_INTERVAL_IN_SECONDS"`
-	SkipUserTokenAuthentication          bool     `mapstructure:"SERVER_SKIP_USER_TOKEN_AUTHENTICATION"`
+	Name                  string   `mapstructure:"SERVER_NAME"`
+	Port                  int      `mapstructure:"SERVER_PORT"`
+	LogLevel              string   `mapstructure:"SERVER_LOG_LEVEL"`
+	ReadTimeoutInSeconds  int      `mapstructure:"SERVER_READ_TIMEOUT_IN_SECONDS"`
+	WriteTimeoutInSeconds int      `mapstructure:"SERVER_WRITE_TIMEOUT_IN_SECONDS"`
+	MaxHeaderBytes        int      `mapstructure:"SERVER_MAX_HEADER_BYTES"`
+	CORSOrigins           []string `mapstructure:"SERVER_CORS_ALLOWED_ORIGINS"`
 }
 
 type OpenTelemetryConfig struct {
@@ -49,28 +43,6 @@ type SignalingPlatformConfig struct {
 	Timeout  int64  `mapstructure:"SIGNALING_PLATFORM_TIMEOUT"`
 }
 
-type AppParamsConfig struct {
-	GoRoutinePoolSize                               int   `mapstructure:"APP_PARAMS_GO_ROUTINE_POOL_SIZE"`
-	ChannelCapacity                                 int   `mapstructure:"APP_PARAMS_CHANNEL_CAPACITY"`
-	MeetingSubscriberMessageBatchSize               int64 `mapstructure:"APP_PARAMS_MEETING_SUBSCRIBER_MESSAGE_BATCH_SIZE"`
-	MeetingSubscriberPollingIntervalInMilliseconds  int64 `mapstructure:"APP_PARAMS_MEETING_SUBSCRIBER_POLLING_INTERVAL_IN_MILLISECONDS"`
-	MeetingPublisherHeartbeatIntervalInMilliseconds int64 `mapstructure:"APP_PARAMS_MEETING_PUBLISHER_HEARTBEAT_INTERVAL_IN_MILLISECONDS"`
-	MeetingStoreAutoCleanupIntervalInSeconds        int64 `mapstructure:"APP_PARAMS_MEETING_STORE_AUTO_CLEANUP_INTERVAL_IN_SECONDS"`
-	MeetingIdleTimeBeforeAutoCleanupInSeconds       int64 `mapstructure:"APP_PARAMS_MEETING_IDLE_TIME_BEFORE_AUTO_CLEANUP_IN_SECONDS"`
-	ParticipantStoreAutoCleanupIntervalInSeconds    int64 `mapstructure:"APP_PARAMS_PARTICIPANT_STORE_AUTO_CLEANUP_INTERVAL_IN_SECONDS"`
-	ParticipantIdleTimeBeforeAutoCleanupInSeconds   int64 `mapstructure:"APP_PARAMS_PARTICIPANT_IDLE_TIME_BEFORE_AUTO_CLEANUP_IN_SECONDS"`
-	SFUSubscriberMessageBatchSize                   int64 `mapstructure:"APP_PARAMS_SFU_SUBSCRIBER_MESSAGE_BATCH_SIZE"`
-	SFUSubscriberPollingIntervalInMilliseconds      int64 `mapstructure:"APP_PARAMS_SFU_SUBSCRIBER_POLLING_INTERVAL_IN_MILLISECONDS"`
-	SFUStoreAutoCleanupIntervalInSeconds            int64 `mapstructure:"APP_PARAMS_SFU_STORE_AUTO_CLEANUP_INTERVAL_IN_SECONDS"`
-	SFUMaxProducerCountPerRouter                    int   `mapstructure:"APP_PARAMS_SFU_MAX_PRODUCER_COUNT_PER_ROUTER"`
-	SFUMaxConsumerCountPerRouter                    int   `mapstructure:"APP_PARAMS_SFU_MAX_CONSUMER_COUNT_PER_ROUTER"`
-}
-
-type SFUFleetConfig struct {
-	RedisStreamName   string `mapstructure:"SFU_FLEET_REDIS_STREAM_NAME"`
-	RedisSortedSetKey string `mapstructure:"SFU_FLEET_REDIS_SORTED_SET_KEY"`
-	RedisHashKey      string `mapstructure:"SFU_FLEET_REDIS_HASH_KEY"`
-}
 type RedisClusterConfig struct {
 	ClusterModeOn               bool   `mapstructure:"REDIS_CLUSTER_MODE_ON"`
 	Addresses                   string `mapstructure:"REDIS_CLUSTER_ADDRESSES"`
@@ -101,7 +73,6 @@ type AppConfig struct {
 	Server                  ServerConfig
 	OpenTelemetry           OpenTelemetryConfig
 	MySQL                   MySQLConfig
-	AppParams               AppParamsConfig
 	SignalingPlatformConfig SignalingPlatformConfig
 	RateLimitConfig         RateLimitConfig
 	RedisCluster            RedisClusterConfig
@@ -147,19 +118,6 @@ func LoadAppConfigFromEnv(path string, name string) (appConfig *AppConfig, err e
 		return &AppConfig{}, err
 	}
 
-	var appParamsConfig AppParamsConfig
-	err = viper.Unmarshal(&appParamsConfig)
-	if err != nil {
-		log.Errorf("Unable to unmarshal app params config: %v", err)
-		return &AppConfig{}, err
-	}
-
-	var sfuFleetConfig SFUFleetConfig
-	err = viper.Unmarshal(&sfuFleetConfig)
-	if err != nil {
-		log.Errorf("Unable to unmarshal mediasoup fleet config: %v", err)
-		return &AppConfig{}, err
-	}
 	var signalingPlatformConfig SignalingPlatformConfig
 	err = viper.Unmarshal(&signalingPlatformConfig)
 	if err != nil {
@@ -178,7 +136,6 @@ func LoadAppConfigFromEnv(path string, name string) (appConfig *AppConfig, err e
 		serverConfig,
 		openTelemetryConfig,
 		mysqlConfig,
-		appParamsConfig,
 		signalingPlatformConfig,
 		rateLimitConfig,
 		redisClusterConfig,

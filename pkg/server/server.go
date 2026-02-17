@@ -76,7 +76,6 @@ func (s *Server) Start() {
 	s.e.Use(WithRequestIDMiddleware()) // Stores request ID in context
 
 	// Application middleware
-	s.e.Use(s.appMiddleware.AuthNMiddleware)
 	s.e.Use(s.appMiddleware.MetricsMiddleware)
 	s.e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Timeout: time.Second * 40,

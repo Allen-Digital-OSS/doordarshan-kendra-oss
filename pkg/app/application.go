@@ -10,20 +10,17 @@ type Application struct {
 	appConfig *common.AppConfig
 	meter     *common.Meter
 	Server    *server.Server
-	GoPool    *common.GoRoutinePool
 }
 
 // NewApplication is a constructor for Application.
 func NewApplication(
 	appConfig *common.AppConfig,
 	meter *common.Meter,
-	serverInstance *server.Server,
-	pool *common.GoRoutinePool) *Application {
+	serverInstance *server.Server) *Application {
 	return &Application{
 		appConfig: appConfig,
 		meter:     meter,
 		Server:    serverInstance,
-		GoPool:    pool,
 	}
 }
 
@@ -38,5 +35,4 @@ func (a *Application) Start() {
 // Cleanup is a destructor for Application.
 func (a *Application) Cleanup() {
 	a.Server.Cleanup()
-	a.GoPool.Release()
 }

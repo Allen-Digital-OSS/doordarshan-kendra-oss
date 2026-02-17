@@ -32,10 +32,6 @@ func InitializeApp(appConfig *common.AppConfig, metric *common.Meter, tenantClus
 	redisRepository := data.NewRedisRepository(redisClient, appConfig)
 	iMeetingV1Handler := handler.NewMeetingV1Handler(tenantClusterHandlerMap, baseClusterHandler, signalingPlatformClient, appConfig, logger, redisRepository)
 	serverServer := server.NewServer(appConfig, appMiddleware, iMeetingV1Handler)
-	goRoutinePool, err := common.NewGoRoutinePool(appConfig)
-	if err != nil {
-		return nil, err
-	}
-	application := app.NewApplication(appConfig, metric, serverServer, goRoutinePool)
+	application := app.NewApplication(appConfig, metric, serverServer)
 	return application, nil
 }

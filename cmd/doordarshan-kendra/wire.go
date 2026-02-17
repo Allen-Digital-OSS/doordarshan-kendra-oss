@@ -22,7 +22,6 @@ func InitializeApp(appConfig *common.AppConfig, metric *common.Meter, tenantClus
 		clients.ProviderSet,
 		data.ProviderSet,
 		handler.ProviderSet,
-		common.ProviderSet,
 		server.ProviderSet,
 		app.NewApplication,
 	)

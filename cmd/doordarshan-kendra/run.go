@@ -38,17 +38,6 @@ func Run(envToConfigPathMap map[string]string, tenantClusterHandlerMap map[strin
 		panic(err)
 	}
 
-	// Read JWT secret from environment if not set.
-	if appConfig.Server.JWTSecret == constant.EmptyStr {
-		log.Infof("JWT secret is not set in the config. Trying to read from the file: %s", appConfig.Server.JWTCredentialsSecretFile)
-		var jwtSecret string
-		jwtSecret, err = common.GetJWTSecretFromCredFile(appConfig.Server.JWTCredentialsSecretFile)
-		if err != nil {
-			log.Errorf("panic: %v", err)
-			panic("JWT secret is not set in config or via file. Please set it in the config or in the file.")
-		}
-		appConfig.Server.JWTSecret = jwtSecret
-	}
 	mySQLClient := data.NewMySQLClient(appConfig)
 	for _, v := range tenantClusterHandlerMap {
 		v.SetDb(mySQLClient.MysqlDb)
