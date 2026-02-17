@@ -1,0 +1,1398 @@
+definitions:
+  request.CloseConsumerRequestV1:
+    properties:
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      target_participants:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        description: Map of target participant IDs to their consumer IDs to close
+        type: object
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - meeting_id
+    - participant_id
+    - target_participants
+    - tenant
+    type: object
+  request.CloseProducerRequestV1:
+    properties:
+      kinds:
+        description: List of producer kinds to close (e.g., ["audio", "video"])
+        example:
+        - audio
+        - video
+        items:
+          type: string
+        type: array
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - kinds
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  request.ConnectTransportRequestV1:
+    properties:
+      dtls_parameters:
+        description: DTLS parameters for WebRTC connection
+        items:
+          type: integer
+        type: array
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - dtls_parameters
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  request.CreateConsumerRequestV1:
+    properties:
+      instance_id:
+        description: Instance identifier
+        example: instance-789
+        type: string
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      rtp_capabilities:
+        description: RTP capabilities for consuming media
+        items:
+          type: integer
+        type: array
+      target_participants:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        description: Map of target participant IDs to their producer kinds to consume
+        type: object
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - instance_id
+    - meeting_id
+    - participant_id
+    - rtp_capabilities
+    - target_participants
+    - tenant
+    type: object
+  request.CreateMeetingRequestV1:
+    properties:
+      consumer_meeting_capacity:
+        description: Maximum number of participants who can consume (receive) media
+        example: 100
+        type: integer
+      meeting_capacity:
+        description: Overall meeting capacity (total participants)
+        example: 100
+        type: integer
+      meeting_id:
+        description: Unique identifier for the meeting
+        example: meeting-123
+        type: string
+      producer_meeting_capacity:
+        description: Maximum number of participants who can produce (send) media
+        example: 50
+        type: integer
+      tenant:
+        description: Tenant identifier for multi-tenancy support
+        example: default
+        type: string
+    required:
+    - meeting_id
+    - tenant
+    type: object
+  request.CreateProducerRequestV1:
+    properties:
+      instance_id:
+        description: Instance identifier
+        example: instance-789
+        type: string
+      kind:
+        description: 'Media kind: "audio" or "video"'
+        example: audio
+        type: string
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      rtp_parameters:
+        description: RTP parameters for the media stream
+        items:
+          type: integer
+        type: array
+      start_recording:
+        description: Whether to start recording this producer
+        example: false
+        type: boolean
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - instance_id
+    - kind
+    - meeting_id
+    - participant_id
+    - rtp_parameters
+    - tenant
+    type: object
+  request.CreateTransportRequestV1:
+    properties:
+      instance_id:
+        description: Instance identifier
+        example: instance-789
+        type: string
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - instance_id
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  request.EndMeetingRequest:
+    properties:
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - meeting_id
+    - tenant
+    type: object
+  request.GetActiveContainerOfMeetingRequest:
+    properties:
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  request.GetProducersOfMeetingRequestV1:
+    properties:
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - meeting_id
+    - tenant
+    type: object
+  request.GetRTPCapabilitiesRequest:
+    properties:
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  request.JoinMeetingRequestV1:
+    properties:
+      instance_id:
+        description: Instance identifier for the participant's client
+        example: instance-789
+        type: string
+      meeting_id:
+        description: Meeting identifier to join
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Unique identifier for the participant
+        example: participant-456
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - instance_id
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  request.LeaveMeetingRequest:
+    properties:
+      instance_id:
+        description: Instance identifier
+        example: instance-789
+        type: string
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - instance_id
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  request.PauseConsumerRequestV1:
+    properties:
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      target_participants:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        description: Map of target participant IDs to their consumer IDs to pause
+        type: object
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - meeting_id
+    - participant_id
+    - target_participants
+    - tenant
+    type: object
+  request.PauseProducerRequestV1:
+    properties:
+      kinds:
+        description: List of producer kinds to pause (e.g., ["audio", "video"])
+        example:
+        - audio
+        - video
+        items:
+          type: string
+        type: array
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      recording_enabled:
+        description: Whether recording should be enabled
+        example: false
+        type: boolean
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - kinds
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  request.PreMeetingDetailsRequest:
+    properties:
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  request.RestartIceRequestV1:
+    properties:
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  request.ResumeConsumerRequestV1:
+    properties:
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      target_participants:
+        additionalProperties:
+          items:
+            type: string
+          type: array
+        description: Map of target participant IDs to their consumer IDs to resume
+        type: object
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - meeting_id
+    - participant_id
+    - target_participants
+    - tenant
+    type: object
+  request.ResumeProducerRequestV1:
+    properties:
+      kinds:
+        description: List of producer kinds to resume (e.g., ["audio", "video"])
+        example:
+        - audio
+        - video
+        items:
+          type: string
+        type: array
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+      participant_id:
+        description: Participant identifier
+        example: participant-456
+        type: string
+      recording_enabled:
+        description: Whether recording should be enabled
+        example: false
+        type: boolean
+      tenant:
+        description: Tenant identifier
+        example: default
+        type: string
+    required:
+    - kinds
+    - meeting_id
+    - participant_id
+    - tenant
+    type: object
+  response.GetActiveContainerOfMeetingResponse:
+    properties:
+      container_id:
+        description: Container identifier where the meeting is hosted
+        example: container-abc
+        type: string
+      meeting_id:
+        description: Meeting identifier
+        example: meeting-123
+        type: string
+    required:
+    - container_id
+    - meeting_id
+    type: object
+info:
+  contact: {}
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Returns OK if the service is healthy and running
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Health check endpoint
+      tags:
+      - Health
+  /v1/activeContainer:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves the container ID where the meeting is currently hosted.
+        Useful for monitoring and debugging.
+      parameters:
+      - description: Get Active Container Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GetActiveContainerOfMeetingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Active container information
+          schema:
+            $ref: '#/definitions/response.GetActiveContainerOfMeetingResponse'
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Meeting not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get active container of meeting
+      tags:
+      - Meeting
+  /v1/closeConsumer:
+    post:
+      consumes:
+      - application/json
+      description: Closes a consumer permanently, stopping the reception of media
+        streams and freeing resources.
+      parameters:
+      - description: Close Consumer Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CloseConsumerRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Consumer closed successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Close a consumer
+      tags:
+      - Consumer
+  /v1/closeProducer:
+    post:
+      consumes:
+      - application/json
+      description: Closes a producer permanently, stopping the media stream and freeing
+        resources.
+      parameters:
+      - description: Close Producer Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CloseProducerRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Producer closed successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Close a producer
+      tags:
+      - Producer
+  /v1/connectConsumerTransport:
+    post:
+      consumes:
+      - application/json
+      description: Connects the consumer transport using DTLS parameters. This establishes
+        the WebRTC transport connection for receiving media.
+      parameters:
+      - description: Connect Transport Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConnectTransportRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Transport connected successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Connect consumer transport
+      tags:
+      - Transport
+  /v1/connectProducerTransport:
+    post:
+      consumes:
+      - application/json
+      description: Connects the producer transport using DTLS parameters. This establishes
+        the WebRTC transport connection for sending media.
+      parameters:
+      - description: Connect Transport Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ConnectTransportRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Transport connected successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Connect producer transport
+      tags:
+      - Transport
+  /v1/createConsumer:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new media consumer for a participant to receive audio/video
+        streams from target participants in the meeting.
+      parameters:
+      - description: Create Consumer Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateConsumerRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Consumer created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a media consumer
+      tags:
+      - Consumer
+  /v1/createMeeting:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new meeting with the specified meeting ID and capacity.
+        The capacity can be specified as overall meeting capacity, or separately as
+        producer and consumer capacities.
+      parameters:
+      - description: Create Meeting Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateMeetingRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Meeting created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed or invalid tenant
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new meeting
+      tags:
+      - Meeting
+  /v1/createProducer:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new media producer for a participant. This allows the
+        participant to publish their audio/video stream to the meeting.
+      parameters:
+      - description: Create Producer Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateProducerRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Producer created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a media producer
+      tags:
+      - Producer
+  /v1/endMeeting:
+    post:
+      consumes:
+      - application/json
+      description: Ends a meeting permanently, closing all participants, producers,
+        consumers, and freeing all associated resources.
+      parameters:
+      - description: End Meeting Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.EndMeetingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Meeting ended successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Meeting not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: End a meeting
+      tags:
+      - Meeting
+  /v1/getProducersOfMeeting:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves a list of all active producers (audio/video streams)
+        in the specified meeting.
+      parameters:
+      - description: Get Producers Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GetProducersOfMeetingRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of producers
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Meeting not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all producers of a meeting
+      tags:
+      - Meeting
+  /v1/getRTPCapabilities:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves the RTP (Real-time Transport Protocol) capabilities for
+        a meeting, which are required for WebRTC negotiation.
+      parameters:
+      - description: Get RTP Capabilities Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.GetRTPCapabilitiesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: RTP capabilities
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Meeting not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get RTP capabilities
+      tags:
+      - Meeting
+  /v1/joinMeeting:
+    post:
+      consumes:
+      - application/json
+      description: Allows a participant to join an existing meeting. The system allocates
+        producer and consumer router IDs for the participant.
+      parameters:
+      - description: Join Meeting Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.JoinMeetingRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Participant joined successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Meeting not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Join an existing meeting
+      tags:
+      - Meeting
+  /v1/leaveMeeting:
+    post:
+      consumes:
+      - application/json
+      description: Allows a participant to leave a meeting. This closes all their
+        producers and consumers and frees associated resources.
+      parameters:
+      - description: Leave Meeting Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.LeaveMeetingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Participant left successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Leave a meeting
+      tags:
+      - Meeting
+  /v1/pauseConsumer:
+    post:
+      consumes:
+      - application/json
+      description: Pauses a consumer temporarily, stopping the reception of media
+        streams without closing it.
+      parameters:
+      - description: Pause Consumer Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.PauseConsumerRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Consumer paused successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Pause a consumer
+      tags:
+      - Consumer
+  /v1/pauseProducer:
+    post:
+      consumes:
+      - application/json
+      description: Pauses a producer temporarily, stopping the media stream from being
+        published without closing it.
+      parameters:
+      - description: Pause Producer Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.PauseProducerRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Producer paused successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Pause a producer
+      tags:
+      - Producer
+  /v1/preMeetingDetails:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves pre-meeting details including router information for
+        a participant before they join.
+      parameters:
+      - description: Pre Meeting Details Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.PreMeetingDetailsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Pre-meeting details
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Meeting not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get pre-meeting details
+      tags:
+      - Meeting
+  /v1/recreateConsumerTransport:
+    post:
+      consumes:
+      - application/json
+      description: Recreates the consumer transport for a participant. This is useful
+        when the transport connection needs to be re-established.
+      parameters:
+      - description: Recreate Transport Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateTransportRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Transport recreated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Recreate consumer transport
+      tags:
+      - Transport
+  /v1/recreateProducerTransport:
+    post:
+      consumes:
+      - application/json
+      description: Recreates the producer transport for a participant. This is useful
+        when the transport connection needs to be re-established.
+      parameters:
+      - description: Recreate Transport Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateTransportRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Transport recreated successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Recreate producer transport
+      tags:
+      - Transport
+  /v1/restartConsumerIce:
+    post:
+      consumes:
+      - application/json
+      description: Restarts the ICE (Interactive Connectivity Establishment) connection
+        for the consumer transport. Used to recover from connection issues.
+      parameters:
+      - description: Restart ICE Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RestartIceRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ICE restarted successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Restart consumer ICE
+      tags:
+      - Transport
+  /v1/restartIce:
+    post:
+      consumes:
+      - application/json
+      description: Restarts the ICE (Interactive Connectivity Establishment) connection
+        for both producer and consumer transports of a participant.
+      parameters:
+      - description: Restart ICE Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RestartIceRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ICE restarted successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Restart ICE for all transports
+      tags:
+      - Transport
+  /v1/restartProducerIce:
+    post:
+      consumes:
+      - application/json
+      description: Restarts the ICE (Interactive Connectivity Establishment) connection
+        for the producer transport. Used to recover from connection issues.
+      parameters:
+      - description: Restart ICE Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.RestartIceRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ICE restarted successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Restart producer ICE
+      tags:
+      - Transport
+  /v1/resumeConsumer:
+    post:
+      consumes:
+      - application/json
+      description: Resumes a previously paused consumer, allowing the participant
+        to receive media streams again.
+      parameters:
+      - description: Resume Consumer Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ResumeConsumerRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Consumer resumed successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Resume a consumer
+      tags:
+      - Consumer
+  /v1/resumeProducer:
+    post:
+      consumes:
+      - application/json
+      description: Resumes a previously paused producer, allowing the participant
+        to publish their media stream again.
+      parameters:
+      - description: Resume Producer Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ResumeProducerRequestV1'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Producer resumed successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request - validation failed
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Router not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Resume a producer
+      tags:
+      - Producer
+swagger: "2.0"
