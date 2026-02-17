@@ -6,14 +6,14 @@
 package cmd
 
 import (
+	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/app"
+	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/clients"
+	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/common"
+	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/data"
+	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/handler"
+	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/server"
+	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/sfu"
 	"github.com/google/wire"
-	"pkg/app"
-	"pkg/clients"
-	"pkg/common"
-	"pkg/data"
-	"pkg/handler"
-	"pkg/server"
-	"pkg/sfu"
 )
 
 // InitializeApp init echo application.
