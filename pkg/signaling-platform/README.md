@@ -50,7 +50,21 @@ DoorDarshan Kendra directly publishes messages to Redis Streams, and the Signali
            ▼
 ┌─────────────────────┐
 │ Signaling Platform  │  ← NOT OPEN SOURCE
-│  (Your Implementation)│
+│(Your Implementation)│
+└──────────┬──────────┘
+           │
+           │ Publishes to Redis Streams
+           ▼
+┌─────────────────────┐
+│   Redis Streams     │
+│ room-stream:{id}    │
+└──────────┬──────────┘
+           │
+           │ Consumed by
+           ▼
+┌─────────────────────┐
+│ Signaling Platform  │  ← NOT OPEN SOURCE
+│(Your Implementation)│
 └──────────┬──────────┘
            │
            │ WebSocket
