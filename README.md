@@ -318,14 +318,14 @@ doordarshan-kendra-oss/
 
 ### Folder Documentation
 
-For detailed documentation on specific components, refer to README files in each folder (to be added as the project evolves):
+For detailed documentation on specific components, refer to the README files in each folder:
 
-- `pkg/handler/README.md` - API handler documentation and request/response formats
-- `pkg/sfu/README.md` - SFU integration guide and cluster management
-- `pkg/data/README.md` - Data layer documentation (MySQL, Redis operations)
-- `pkg/signaling-platform/README.md` - Signaling platform integration guide
-- `docs/README.md` - API documentation generation and Swagger setup
-- `cmd/doordarshan-kendra/README.md` - Application bootstrap and dependency injection
+- [`pkg/handler/README.md`](pkg/handler/README.md) - API handler documentation and request/response formats
+- [`pkg/sfu/README.md`](pkg/sfu/README.md) - SFU integration guide and cluster management
+- [`pkg/data/README.md`](pkg/data/README.md) - Data layer documentation (MySQL, Redis operations)
+- [`pkg/signaling-platform/README.md`](pkg/signaling-platform/README.md) - Signaling platform integration guide
+- [`docs/README.md`](docs/README.md) - API documentation generation and Swagger setup
+- [`cmd/doordarshan-kendra/README.md`](cmd/doordarshan-kendra/README.md) - Application bootstrap and dependency injection
 
 ## 📚 API Documentation
 
