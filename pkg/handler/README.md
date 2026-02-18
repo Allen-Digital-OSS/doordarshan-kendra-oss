@@ -156,15 +156,28 @@ All request and response structures are defined in the `request/` and `response/
 
 ## Signaling Integration
 
-The handlers publish signaling messages to Redis Streams for the Signaling Platform to consume. Signal types include:
+The handlers send signaling messages to the Signaling Platform using one of two approaches. **Both approaches ultimately use Redis**, but the difference is where the Redis client dependency lives:
 
+### Option 1: HTTP API (No Redis Client in DoorDarshan Kendra)
+- Handlers make HTTP POST requests to Signaling Platform endpoints
+- **No Redis client required in DoorDarshan Kendra**
+- Signaling Platform handles Redis operations
+- Direct synchronous communication
+
+### Option 2: Direct Redis Streams (Redis Client Required in DoorDarshan Kendra)
+- Handlers publish messages directly to Redis Streams
+- **Redis client required in DoorDarshan Kendra**
+- Asynchronous messaging
+- See `pkg/data/redis_repository.go` for Redis operations
+
+**Signal types include:**
 - `DoordarshanStreamPublish`: When a participant publishes a stream
 - `DoordarshanStreamUnPublish`: When a participant stops publishing
 - `DoordarshanUserJoined`: When a participant joins
 - `DoordarshanUserLeft`: When a participant leaves
 - `DoordarshanDisconnect`: When a participant disconnects
 
-See `pkg/signaling-platform/README.md` for more details on signaling message format.
+See `pkg/signaling-platform/README.md` for more details on signaling message format and integration options.
 
 ## Error Handling
 
@@ -189,8 +202,8 @@ Rate limiting is configured per endpoint. Default rate limit is 10 QPS (configur
 - **Validator v10**: Request validation
 - **Zap**: Structured logging
 - **SFU Package**: SFU cluster management
-- **Data Package**: Database and Redis operations
-- **Signaling Platform Client**: HTTP client for signaling platform
+- **Data Package**: Database operations (MySQL required, Redis client optional)
+- **Redis Repository**: Redis operations (Option 2, only if using direct Redis Streams)
 
 ## Testing
 

@@ -38,11 +38,6 @@ type MySQLConfig struct {
 	SecretFile       string `mapstructure:"MYSQL_CREDENTIALS_SECRET_FILE_PATH"`
 	OpenConnections  int    `mapstructure:"MYSQL_MAX_CONNECTIONS"`
 }
-type SignalingPlatformConfig struct {
-	Endpoint string `mapstructure:"SIGNALING_PLATFORM_ENDPOINT"`
-	Timeout  int64  `mapstructure:"SIGNALING_PLATFORM_TIMEOUT"`
-}
-
 type RedisClusterConfig struct {
 	ClusterModeOn               bool   `mapstructure:"REDIS_CLUSTER_MODE_ON"`
 	Addresses                   string `mapstructure:"REDIS_CLUSTER_ADDRESSES"`
@@ -70,12 +65,11 @@ type RedisClusterConfig struct {
 }
 
 type AppConfig struct {
-	Server                  ServerConfig
-	OpenTelemetry           OpenTelemetryConfig
-	MySQL                   MySQLConfig
-	SignalingPlatformConfig SignalingPlatformConfig
-	RateLimitConfig         RateLimitConfig
-	RedisCluster            RedisClusterConfig
+	Server          ServerConfig
+	OpenTelemetry   OpenTelemetryConfig
+	MySQL           MySQLConfig
+	RateLimitConfig RateLimitConfig
+	RedisCluster    RedisClusterConfig
 }
 
 // LoadAppConfigFromEnv loads the app config from the given path and name.
@@ -118,13 +112,6 @@ func LoadAppConfigFromEnv(path string, name string) (appConfig *AppConfig, err e
 		return &AppConfig{}, err
 	}
 
-	var signalingPlatformConfig SignalingPlatformConfig
-	err = viper.Unmarshal(&signalingPlatformConfig)
-	if err != nil {
-		log.Errorf("Unable to unmarshal signaling platform config: %v", err)
-		return &AppConfig{}, err
-	}
-
 	var redisClusterConfig RedisClusterConfig
 	err = viper.Unmarshal(&redisClusterConfig)
 	if err != nil {
@@ -136,7 +123,6 @@ func LoadAppConfigFromEnv(path string, name string) (appConfig *AppConfig, err e
 		serverConfig,
 		openTelemetryConfig,
 		mysqlConfig,
-		signalingPlatformConfig,
 		rateLimitConfig,
 		redisClusterConfig,
 	}, nil
