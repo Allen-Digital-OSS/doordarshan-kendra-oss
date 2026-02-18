@@ -38,7 +38,7 @@ DoorDarshan Kendra directly publishes messages to Redis Streams, and the Signali
 
 ## Message Flow
 
-### Option 1: HTTP API (Recommended)
+### Option 1: HTTP API
 
 ```
 ┌─────────────────────┐
@@ -250,8 +250,7 @@ If you're implementing your own Signaling Platform, you need to support either H
 #### Option 1: HTTP API Implementation
 
 1. **Expose HTTP Endpoints**
-   - `POST /room/{room_id}/broadcast` - Accept `BroadcastSignalRequest`
-   - `POST /room/broadcast/bulk` - Accept `BulkBroadcastSignalRequest`
+   - Your Signaling Platform should expose HTTP endpoints that accept `BroadcastSignalRequest` and `BulkBroadcastSignalRequest`
 
 2. **Process Requests**
    - Parse `BroadcastSignalRequest` from HTTP request body
@@ -354,25 +353,6 @@ for _, message := range messages[0].Messages {
 ## HTTP API Integration (Option 1)
 
 The Signaling Platform should expose HTTP API endpoints for direct broadcasting. With this approach, the Signaling Platform handles Redis operations, so no Redis client is required in DoorDarshan Kendra.
-
-### Endpoints
-
-- `POST /room/{room_id}/broadcast` - Broadcast to a specific room
-- `POST /room/broadcast/bulk` - Bulk broadcast to multiple rooms
-
-### Implementation
-
-See `pkg/clients/signaling_platform.go` for the HTTP client implementation. The client uses:
-- `BroadcastHandler`: Sends a single broadcast signal
-- `BulkBroadcastHandler`: Sends multiple broadcast signals
-
-### Configuration
-
-Set the Signaling Platform endpoint in your config:
-```env
-SIGNALING_PLATFORM_ENDPOINT=http://localhost:8001
-SIGNALING_PLATFORM_TIMEOUT=1000
-```
 
 **No Redis client needed in DoorDarshan Kendra** when using this approach. The Signaling Platform will handle pushing messages to Redis Streams.
 

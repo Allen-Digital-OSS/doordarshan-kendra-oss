@@ -134,7 +134,7 @@ result := client.Ping(ctx)
 
 The `RedisRepository` provides high-level operations for Redis Streams, which are used for directly publishing signaling messages to Redis Streams (Option 2).
 
-**Alternative**: Instead of using direct Redis Streams, you can use the HTTP API approach (see `pkg/clients/signaling_platform.go`) where the Signaling Platform handles Redis operations.
+**Alternative**: Instead of using direct Redis Streams, you can use the HTTP API approach where the Signaling Platform handles Redis operations.
 
 ### Stream Operations
 
@@ -327,7 +327,7 @@ The package logs:
 
 ## Related Documentation
 
-- [Handler Package](../handler/README.md) - Uses Redis Repository or HTTP client for signaling
+- [Handler Package](../handler/README.md) - Uses Redis Repository or HTTP API for signaling
 - [Signaling Platform](../signaling-platform/README.md) - Message format details and integration options
 - [Application Bootstrap](../../cmd/doordarshan-kendra/README.md) - How clients are initialized
 

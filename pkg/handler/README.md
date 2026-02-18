@@ -203,7 +203,6 @@ Rate limiting is configured per endpoint. Default rate limit is 10 QPS (configur
 - **Zap**: Structured logging
 - **SFU Package**: SFU cluster management
 - **Data Package**: Database operations (MySQL required, Redis client optional)
-- **Signaling Platform Client**: HTTP client for signaling platform (Option 1)
 - **Redis Repository**: Redis operations (Option 2, only if using direct Redis Streams)
 
 ## Testing

@@ -77,11 +77,6 @@ DoorDarshan Kendra calls HTTP endpoints of the Signaling Platform. The Signaling
 - DoorDarshan Kendra makes HTTP POST requests to Signaling Platform endpoints
 - **No Redis client required in DoorDarshan Kendra**
 - Signaling Platform handles Redis operations
-- DoorDarshan Kendra uses HTTP client only (see `pkg/clients/signaling_platform.go`)
-
-**Endpoints:**
-- `POST /room/{room_id}/broadcast` - Broadcast to a specific room
-- `POST /room/broadcast/bulk` - Bulk broadcast to multiple rooms
 
 #### Option 2: Direct Redis Streams (Redis Client Required in DoorDarshan Kendra)
 
@@ -239,8 +234,6 @@ REDIS_CLUSTER_PASSWORD=  # Leave empty if no password
 
 # Signaling Platform (Your implementation)
 # Option 1: HTTP API (no Redis client required in DoorDarshan Kendra)
-SIGNALING_PLATFORM_ENDPOINT=http://localhost:8001
-SIGNALING_PLATFORM_TIMEOUT=1000
 # Option 2: Direct Redis Streams (requires Redis configuration above)
 
 # SFU Configuration (Adjust based on your SFU setup)
@@ -303,7 +296,6 @@ doordarshan-kendra-oss/
 │   │   └── application.go       # Application lifecycle
 │   │
 │   ├── clients/                 # External service clients
-│   │   └── signaling_platform.go  # Signaling platform HTTP client
 │   │
 │   ├── common/                  # Shared utilities
 │   │   ├── config.go            # Configuration structures
