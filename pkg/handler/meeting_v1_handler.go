@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/clients"
 	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/common"
 	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/constant"
 	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/data"
@@ -156,7 +155,6 @@ type meetingV1Handler struct {
 	requestGenerator        sfu.PayloadGenerator
 	containerDownChannel    chan ContainerDownSignal
 	producerSignalChannel   chan ProducerSignal
-	signalingPlatformClient *clients.SignalingPlatformClient
 	apiRateLimiter          *ApiRateLimiter
 	logger                  *appLog.Logger
 	signallingRedisRepo     data.RedisRepository
@@ -165,7 +163,6 @@ type meetingV1Handler struct {
 func NewMeetingV1Handler(
 	tenantClusterHandlerMap map[string]sfu.IClusterHandler,
 	baseClusterHandler *sfu.BaseClusterHandler,
-	signalingPlatformClient *clients.SignalingPlatformClient,
 	appConfig *common.AppConfig,
 	logger *appLog.Logger,
 	redisRepo data.RedisRepository) IMeetingV1Handler {
@@ -219,7 +216,6 @@ func NewMeetingV1Handler(
 		requestGenerator:        sfu.PayloadGenerator{},
 		containerDownChannel:    make(chan ContainerDownSignal, 100),
 		producerSignalChannel:   make(chan ProducerSignal, 40000),
-		signalingPlatformClient: signalingPlatformClient,
 		apiRateLimiter:          &apiRateLimiter,
 		logger:                  logger,
 		signallingRedisRepo:     redisRepo,

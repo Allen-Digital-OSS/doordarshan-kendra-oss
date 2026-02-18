@@ -8,7 +8,6 @@ package cmd
 
 import (
 	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/app"
-	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/clients"
 	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/common"
 	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/data"
 	"github.com/Allen-Digital-OSS/doordarshan-kendra-oss/pkg/handler"
@@ -23,14 +22,13 @@ func InitializeApp(appConfig *common.AppConfig, metric *common.Meter, tenantClus
 	appMiddleware := server.NewAppMiddleware(appConfig, metric)
 	mySQLClient := data.NewMySQLClient(appConfig)
 	baseClusterHandler := sfu.NewBaseClusterHandler(mySQLClient)
-	signalingPlatformClient := clients.NewSignalingPlatformClient(appConfig)
 	logger, err := handler.NewLoggerProvider(appConfig)
 	if err != nil {
 		return nil, err
 	}
 	redisClient := data.NewRedisClient(appConfig)
 	redisRepository := data.NewRedisRepository(redisClient, appConfig)
-	iMeetingV1Handler := handler.NewMeetingV1Handler(tenantClusterHandlerMap, baseClusterHandler, signalingPlatformClient, appConfig, logger, redisRepository)
+	iMeetingV1Handler := handler.NewMeetingV1Handler(tenantClusterHandlerMap, baseClusterHandler, appConfig, logger, redisRepository)
 	serverServer := server.NewServer(appConfig, appMiddleware, iMeetingV1Handler)
 	application := app.NewApplication(appConfig, metric, serverServer)
 	return application, nil
