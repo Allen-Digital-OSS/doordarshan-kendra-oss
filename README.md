@@ -43,7 +43,9 @@ DoorDarshan Kendra provides a RESTful API for managing WebRTC meetings, includin
 │  - SFU Coordination                  │
 └────────┬────────────────────────────┘
          │
-         ├──► Redis Streams (Signaling Messages)
+         ├──► HTTP API (Signaling Platform) [Option 1]
+         │    OR
+         ├──► Redis Streams (Signaling Messages) [Option 2]
          │
          ├──► MySQL (Meeting State)
          │
@@ -54,36 +56,64 @@ DoorDarshan Kendra provides a RESTful API for managing WebRTC meetings, includin
 
 1. **DoorDarshan Kendra**: This open-source service handles meeting orchestration
 2. **SFU Clusters**: External SFU services that handle actual media routing
-3. **Redis**: Used for signaling message streams (pub/sub pattern)
-4. **MySQL**: Stores meeting metadata and state
-5. **Signaling Platform**: **NOT OPEN SOURCE** - Consumes Redis streams and broadcasts to clients via WebSocket
+3. **MySQL**: Stores meeting metadata and state
+4. **Signaling Platform**: **NOT OPEN SOURCE** - Can be integrated via:
+   - **Option 1**: HTTP API endpoints (no Redis client in DoorDarshan Kendra - Signaling Platform handles Redis)
+   - **Option 2**: Direct Redis Streams (Redis client required in DoorDarshan Kendra)
+5. **Redis**: **OPTIONAL in DoorDarshan Kendra** - Redis client only needed if using Option 2. With Option 1, Signaling Platform handles Redis operations.
 
 ## ⚠️ Important Note: Signaling Platform
 
 **The Signaling Platform is NOT part of this open-source repository.**
 
-This service publishes signaling messages (user joined, stream published, etc.) to **Redis Streams**. A separate, proprietary Signaling Platform service:
+DoorDarshan Kendra communicates with the Signaling Platform using one of two approaches. **Both approaches ultimately use Redis**, but the difference is where the Redis client dependency lives:
 
-- Consumes messages from Redis Streams
-- Manages WebSocket connections with meeting participants
-- Broadcasts signaling messages to connected clients
-- Handles real-time communication between participants
+### Integration Options
+
+#### Option 1: HTTP API (No Redis Client in DoorDarshan Kendra)
+
+DoorDarshan Kendra calls HTTP endpoints of the Signaling Platform. The Signaling Platform then pushes messages to Redis Streams.
+
+- DoorDarshan Kendra makes HTTP POST requests to Signaling Platform endpoints
+- **No Redis client required in DoorDarshan Kendra**
+- Signaling Platform handles Redis operations
+- DoorDarshan Kendra uses HTTP client only (see `pkg/clients/signaling_platform.go`)
+
+**Endpoints:**
+- `POST /room/{room_id}/broadcast` - Broadcast to a specific room
+- `POST /room/broadcast/bulk` - Bulk broadcast to multiple rooms
+
+#### Option 2: Direct Redis Streams (Redis Client Required in DoorDarshan Kendra)
+
+DoorDarshan Kendra directly publishes signaling messages to **Redis Streams**. The Signaling Platform then consumes from these streams.
+
+- DoorDarshan Kendra publishes to Redis Streams (format: `room-stream:{meeting_id}`)
+- **Redis client required in DoorDarshan Kendra**
+- Signaling Platform consumes from Redis Streams
+- DoorDarshan Kendra uses Redis client (see `pkg/data/redis_repository.go`)
 
 ### What This Means for Users
 
 If you want to use this codebase, you will need to:
 
-1. **Implement your own Signaling Platform** that:
-   - Consumes from Redis Streams (format: `room-stream:{meeting_id}`)
+1. **Choose an integration approach:**
+   - **Option 1**: Use HTTP API - No Redis client needed in DoorDarshan Kendra (Redis is handled by Signaling Platform)
+   - **Option 2**: Use Redis Streams - Redis client required in DoorDarshan Kendra
+
+2. **Implement your own Signaling Platform** that:
+   - **For Option 1**: Exposes HTTP endpoints that DoorDarshan Kendra can call, and pushes messages to Redis Streams
+   - **For Option 2**: Consumes from Redis Streams (format: `room-stream:{meeting_id}`)
    - Manages WebSocket connections with meeting participants
    - Broadcasts messages to connected clients
    - Handles the message format defined in `pkg/signaling-platform/requests.go`
 
-2. **Or integrate with an existing signaling solution** that can consume Redis Streams
+3. **Or integrate with an existing signaling solution** that supports either approach
 
-### Redis Stream Message Format
+### Redis Stream Message Format (Option 2 Only)
 
-Messages are published to Redis Streams with the key format: `room-stream:{meeting_id}`
+**Note**: This section only applies if you're using direct Redis Streams (Option 2). If using HTTP API (Option 1), the Signaling Platform handles Redis operations.
+
+When using Option 2, messages are published to Redis Streams with the key format: `room-stream:{meeting_id}`
 
 The message structure in the stream includes:
 - `name`: Signal type (e.g., "DoordarshanStreamPublish")
@@ -103,7 +133,7 @@ The message structure in the stream includes:
 **Implementation Reference:**
 - See `pkg/handler/meeting_v1_handler.go` for how messages are published
 - See `pkg/signaling-platform/requests.go` for the request structure
-- See `pkg/data/redis_repository.go` for Redis stream operations
+- See `pkg/data/redis_repository.go` for Redis stream operations (Option 2 only)
 
 ## ✨ Features
 
@@ -125,8 +155,10 @@ The message structure in the stream includes:
 
 - **Go**: 1.24.0 or higher
 - **MySQL**: 5.7+ or 8.0+
-- **Redis**: 6.0+ (Cluster mode supported)
+- **Redis**: 6.0+ (Optional - only required if using Redis Streams for signaling)
 - **Make** (optional, for build scripts)
+
+**Note**: Redis client in DoorDarshan Kendra is **optional** and only needed if you choose Option 2 (direct Redis Streams). If you use Option 1 (HTTP API), the Signaling Platform handles Redis operations, so no Redis client is required in DoorDarshan Kendra.
 
 ### Go Dependencies
 
@@ -147,7 +179,7 @@ Key dependencies (see `go.mod` for complete list):
 
 1. Install Go 1.24.0 or higher: https://golang.org/dl/
 2. Install MySQL: https://dev.mysql.com/downloads/
-3. Install Redis: https://redis.io/download
+3. Install Redis: https://redis.io/download (Optional - only if using Option 2: direct Redis Streams)
 
 ### Step 1: Clone the Repository
 
@@ -198,14 +230,18 @@ SERVER_LOG_LEVEL=info
 # MySQL Configuration
 MYSQL_CONNECTION_STRING=root:password@(127.0.0.1:3306)/doordarshan
 
-# Redis Configuration
+# Redis Configuration (Optional - only if using Option 2: direct Redis Streams)
+# If using Option 1: HTTP API, Redis client is not required in DoorDarshan Kendra
+# (Signaling Platform will handle Redis operations)
 REDIS_CLUSTER_MODE_ON=false  # Set to false for single Redis instance
 REDIS_CLUSTER_ADDRESSES=127.0.0.1:6379
 REDIS_CLUSTER_PASSWORD=  # Leave empty if no password
 
 # Signaling Platform (Your implementation)
+# Option 1: HTTP API (no Redis client required in DoorDarshan Kendra)
 SIGNALING_PLATFORM_ENDPOINT=http://localhost:8001
 SIGNALING_PLATFORM_TIMEOUT=1000
+# Option 2: Direct Redis Streams (requires Redis configuration above)
 
 # SFU Configuration (Adjust based on your SFU setup)
 # See pkg/sfu/ for SFU integration details
@@ -384,8 +420,8 @@ Configuration is managed through environment variables. See `configs/local.env` 
 
 - **Server**: Port, timeouts, CORS, logging
 - **MySQL**: Connection string
-- **Redis**: Cluster settings, connection pool, timeouts
-- **Signaling Platform**: Endpoint and timeout
+- **Redis**: Cluster settings, connection pool, timeouts (Optional - only for Option 2: direct Redis Streams)
+- **Signaling Platform**: Endpoint and timeout (for HTTP API approach)
 - **OpenTelemetry**: Tracing and metrics export
 - **Rate Limiting**: API rate limits
 
@@ -457,4 +493,8 @@ Please check the LICENSE file in the repository root for the full license text.
 
 ---
 
-**Note**: Remember that you'll need to implement or integrate a Signaling Platform service to consume Redis Streams and manage WebSocket connections for this service to be fully functional.
+**Note**: Remember that you'll need to implement or integrate a Signaling Platform service. You can choose between:
+- **Option 1: HTTP API**: No Redis client required in DoorDarshan Kendra (Signaling Platform handles Redis)
+- **Option 2: Direct Redis Streams**: Redis client required in DoorDarshan Kendra
+
+The Signaling Platform should manage WebSocket connections and broadcast messages to meeting participants. Both approaches ultimately use Redis, but Option 1 moves the Redis dependency to the Signaling Platform.

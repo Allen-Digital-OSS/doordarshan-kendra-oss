@@ -5,9 +5,11 @@ This package provides data access layer abstractions for MySQL and Redis operati
 ## Overview
 
 The data package provides:
-- **MySQL Client**: Database connection and query operations
-- **Redis Client**: Redis cluster connection and stream operations
-- **Redis Repository**: High-level Redis operations (streams, pub/sub)
+- **MySQL Client**: Database connection and query operations (Required)
+- **Redis Client**: Redis cluster connection and stream operations (Optional - only for Redis Streams signaling)
+- **Redis Repository**: High-level Redis operations (streams, pub/sub) (Optional - only for Redis Streams signaling)
+
+**Important**: Redis client in DoorDarshan Kendra is **optional** and only required if you're using Option 2 (direct Redis Streams). If you're using Option 1 (HTTP API), the Signaling Platform handles Redis operations, so no Redis client is needed in DoorDarshan Kendra.
 
 ## Structure
 
@@ -70,12 +72,16 @@ rows, err := db.QueryContext(ctx, "SELECT * FROM meetings WHERE meeting_id = ?",
 
 ### Overview
 
+**⚠️ Optional Component**: The `RedisClient` is only required if you're using Option 2 (direct Redis Streams). If you're using Option 1 (HTTP API), the Signaling Platform handles Redis operations, so you can skip this section.
+
 The `RedisClient` manages Redis cluster connections with support for:
 - Redis Cluster mode
 - Single Redis instance (when cluster mode is off)
 - TLS/SSL connections
 - Authentication (username/password)
 - Connection pooling
+
+**Note**: When using Option 2, DoorDarshan Kendra directly publishes to Redis Streams for signaling. With Option 1, the Signaling Platform handles Redis operations.
 
 ### Configuration
 
@@ -124,7 +130,11 @@ result := client.Ping(ctx)
 
 ### Overview
 
-The `RedisRepository` provides high-level operations for Redis Streams, which are used for signaling message broadcasting.
+**⚠️ Optional Component**: The `RedisRepository` is only required if you're using Option 2 (direct Redis Streams). If you're using Option 1 (HTTP API), the Signaling Platform handles Redis operations, so you can skip this section.
+
+The `RedisRepository` provides high-level operations for Redis Streams, which are used for directly publishing signaling messages to Redis Streams (Option 2).
+
+**Alternative**: Instead of using direct Redis Streams, you can use the HTTP API approach (see `pkg/clients/signaling_platform.go`) where the Signaling Platform handles Redis operations.
 
 ### Stream Operations
 
@@ -317,6 +327,26 @@ The package logs:
 
 ## Related Documentation
 
-- [Handler Package](../handler/README.md) - Uses Redis Repository for signaling
-- [Signaling Platform](../signaling-platform/README.md) - Message format details
+- [Handler Package](../handler/README.md) - Uses Redis Repository or HTTP client for signaling
+- [Signaling Platform](../signaling-platform/README.md) - Message format details and integration options
 - [Application Bootstrap](../../cmd/doordarshan-kendra/README.md) - How clients are initialized
+
+## Choosing Between HTTP API and Direct Redis Streams
+
+### Option 1: HTTP API
+- ✅ No Redis client required in DoorDarshan Kendra
+- ✅ Simpler architecture for DoorDarshan Kendra
+- ✅ Direct communication with Signaling Platform
+- ✅ Easier to debug
+- ✅ Signaling Platform handles Redis operations
+- ❌ Synchronous (blocks until response)
+
+### Option 2: Direct Redis Streams
+- ✅ Asynchronous messaging
+- ✅ Better for high throughput
+- ✅ Decoupled architecture
+- ❌ Requires Redis client in DoorDarshan Kendra
+- ❌ More complex setup
+- ❌ Redis dependency in DoorDarshan Kendra
+
+**Note**: Both approaches ultimately use Redis. The difference is where the Redis client dependency lives - in DoorDarshan Kendra (Option 2) or in the Signaling Platform (Option 1).

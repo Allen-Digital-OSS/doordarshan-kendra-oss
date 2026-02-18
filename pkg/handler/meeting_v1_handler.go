@@ -1732,6 +1732,10 @@ func (sh *meetingV1Handler) handleBroadcastSignal(ctx context.Context, roomIDStr
 		return errors.New("error while marshalling signal payload")
 	}
 
+	// We can call http API of a signaling platform to broadcast the signal, but that would add extra latency.
+	// Instead, we are pushing the signal to a redis stream and the consumers can consume from the signaling platform.
+	// Doordarshan Kendra has no dependency of redis, we are directly pushing to signaling platform's redis stream.
+
 	streamKey := fmt.Sprintf(RoomStreamKeyFormat, roomIDStr)
 	messageID, err := sh.signallingRedisRepo.PushToStream(
 		ctx,

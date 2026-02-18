@@ -5,9 +5,9 @@ This package defines the data structures and models for communicating with the S
 ## Overview
 
 The Signaling Platform is a separate, proprietary service that:
-- Consumes messages from Redis Streams
 - Manages WebSocket connections with meeting participants
 - Broadcasts signaling messages to connected clients
+- Can be integrated via **HTTP API** or **Redis Streams**
 
 This package provides the request/response structures used to communicate with the Signaling Platform.
 
@@ -15,12 +15,52 @@ This package provides the request/response structures used to communicate with t
 
 ⚠️ **The Signaling Platform service is NOT part of this open-source repository.**
 
-This service only **publishes** messages to Redis Streams. You must implement or integrate your own Signaling Platform that:
-1. Consumes from Redis Streams (format: `room-stream:{meeting_id}`)
-2. Manages WebSocket connections
-3. Broadcasts messages to connected clients
+DoorDarshan Kendra can communicate with the Signaling Platform using one of two approaches. **Both approaches ultimately use Redis**, but the difference is where the Redis client dependency lives:
+
+### Option 1: HTTP API (No Redis Client in DoorDarshan Kendra)
+
+DoorDarshan Kendra makes HTTP POST requests directly to the Signaling Platform. The Signaling Platform then pushes messages to Redis Streams.
+
+- **No Redis client required in DoorDarshan Kendra**
+- Signaling Platform handles Redis operations
+- Simpler architecture for DoorDarshan Kendra
+- Direct synchronous communication
+
+### Option 2: Direct Redis Streams (Redis Client Required in DoorDarshan Kendra)
+
+DoorDarshan Kendra directly publishes messages to Redis Streams, and the Signaling Platform consumes them.
+
+- **Redis client required in DoorDarshan Kendra**
+- DoorDarshan Kendra handles Redis operations
+- Asynchronous messaging
+- Decoupled architecture
+- See `pkg/data/redis_repository.go` for implementation
 
 ## Message Flow
+
+### Option 1: HTTP API (Recommended)
+
+```
+┌─────────────────────┐
+│  DoorDarshan Kendra │
+│   (This Service)    │
+└──────────┬──────────┘
+           │
+           │ HTTP POST
+           ▼
+┌─────────────────────┐
+│ Signaling Platform  │  ← NOT OPEN SOURCE
+│  (Your Implementation)│
+└──────────┬──────────┘
+           │
+           │ WebSocket
+           ▼
+┌─────────────────────┐
+│   Client Apps       │
+└─────────────────────┘
+```
+
+### Option 2: Redis Streams
 
 ```
 ┌─────────────────────┐
@@ -205,7 +245,33 @@ map[string]interface{}{
 
 ### For Signaling Platform Implementers
 
-If you're implementing your own Signaling Platform, you need to:
+If you're implementing your own Signaling Platform, you need to support either HTTP API or Redis Streams (or both):
+
+#### Option 1: HTTP API Implementation
+
+1. **Expose HTTP Endpoints**
+   - `POST /room/{room_id}/broadcast` - Accept `BroadcastSignalRequest`
+   - `POST /room/broadcast/bulk` - Accept `BulkBroadcastSignalRequest`
+
+2. **Process Requests**
+   - Parse `BroadcastSignalRequest` from HTTP request body
+   - Extract `Details.Payload` for signal-specific data
+   - Push message to Redis Streams (your Signaling Platform handles this)
+   - Return HTTP 200 on success
+
+3. **Manage WebSocket Connections**
+   - Maintain WebSocket connections per participant
+   - Map participant IDs to WebSocket connections
+   - Handle connection lifecycle (connect, disconnect, reconnect)
+
+4. **Broadcast Messages**
+   - If `ReceiverIDs` is nil/empty: broadcast to all participants in room
+   - If `ReceiverIDs` is set: send only to specified participants
+   - Format message appropriately for client consumption
+
+**Note**: Your Signaling Platform will need a Redis client to push messages to Redis Streams, but DoorDarshan Kendra does not need one.
+
+#### Option 2: Redis Streams Implementation
 
 1. **Consume Redis Streams**
    - Subscribe to streams matching pattern: `room-stream:*`
@@ -226,7 +292,33 @@ If you're implementing your own Signaling Platform, you need to:
    - If `ReceiverIDs` is set: send only to specified participants
    - Format message appropriately for client consumption
 
-### Example Consumer (Pseudocode)
+### Example Implementation (Pseudocode)
+
+#### HTTP API Handler (Option 1)
+
+```go
+// HTTP endpoint handler
+func BroadcastHandler(w http.ResponseWriter, r *http.Request) {
+    var request BroadcastSignalRequest
+    json.NewDecoder(r.Body).Decode(&request)
+
+    // Get WebSocket connections for room
+    connections := getWebSocketConnections(request.RoomID)
+
+    // Broadcast to connections
+    if request.ReceiverIDs == nil {
+        // Broadcast to all
+        broadcastToAll(connections, request)
+    } else {
+        // Broadcast to specific participants
+        broadcastToParticipants(connections, request.ReceiverIDs, request)
+    }
+
+    w.WriteHeader(http.StatusOK)
+}
+```
+
+#### Redis Streams Consumer (Option 2)
 
 ```go
 // Consume from Redis Stream
@@ -259,16 +351,30 @@ for _, message := range messages[0].Messages {
 }
 ```
 
-## HTTP API (Optional)
+## HTTP API Integration (Option 1)
 
-The Signaling Platform may also expose an HTTP API for direct broadcasting (used by this service):
+The Signaling Platform should expose HTTP API endpoints for direct broadcasting. With this approach, the Signaling Platform handles Redis operations, so no Redis client is required in DoorDarshan Kendra.
 
 ### Endpoints
 
 - `POST /room/{room_id}/broadcast` - Broadcast to a specific room
 - `POST /room/broadcast/bulk` - Bulk broadcast to multiple rooms
 
-See `pkg/clients/signaling_platform.go` for the HTTP client implementation.
+### Implementation
+
+See `pkg/clients/signaling_platform.go` for the HTTP client implementation. The client uses:
+- `BroadcastHandler`: Sends a single broadcast signal
+- `BulkBroadcastHandler`: Sends multiple broadcast signals
+
+### Configuration
+
+Set the Signaling Platform endpoint in your config:
+```env
+SIGNALING_PLATFORM_ENDPOINT=http://localhost:8001
+SIGNALING_PLATFORM_TIMEOUT=1000
+```
+
+**No Redis client needed in DoorDarshan Kendra** when using this approach. The Signaling Platform will handle pushing messages to Redis Streams.
 
 ## Client ID
 
@@ -298,9 +404,9 @@ Only the specified signal types are valid.
 
 ## Related Documentation
 
-- [Handler Package](../handler/README.md) - Where signals are published
-- [Data Layer](../data/README.md) - Redis Stream operations
-- [Main README](../../README.md) - Overall architecture
+- [Handler Package](../handler/README.md) - Where signals are sent (HTTP or Redis)
+- [Data Layer](../data/README.md) - Redis Stream operations (Option 2 only)
+- [Main README](../../README.md) - Overall architecture and integration options
 
 ## Troubleshooting
 
