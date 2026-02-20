@@ -207,16 +207,6 @@ SFU configuration is managed through:
 - Environment variables (for connection settings)
 - Tenant-specific handler implementations
 
-## Testing
-
-Run SFU package tests:
-
-```bash
-go test ./pkg/sfu/...
-```
-
-## Best Practices
-
 1. **Container Selection**: Always check capacity before allocation
 2. **Router Management**: Ensure proper cleanup when participants leave
 3. **Monitoring**: Regularly check container health

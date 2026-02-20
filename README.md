@@ -418,38 +418,16 @@ Configuration is managed through environment variables. See `configs/local.env` 
 - **Rate Limiting**: API rate limits
 
 ## 🤝 Contributing
+We follow a fork-based contribution model.
 
-We welcome contributions! Please follow these guidelines:
+Workflow:
+1.	Fork the repository
+2.	Create a feature branch in your fork
+3.	Make your changes
+4.	Run pre-commit hooks
+5.	Open a Pull Request against main
 
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/your-feature-name`
-3. **Make your changes** following the existing code style
-4. **Add tests** for new functionality
-5. **Run tests**: `go test ./...`
-6. **Run linters**: Ensure code passes all checks
-7. **Commit your changes**: Use clear, descriptive commit messages
-8. **Push to your fork**: `git push origin feature/your-feature-name`
-9. **Open a Pull Request**: Provide a clear description of changes
-
-### Code Style
-
-- Follow Go standard formatting: `go fmt ./...`
-- Use `golangci-lint` for linting
-- Write clear, self-documenting code
-- Add comments for exported functions and types
-
-### Testing
-
-```bash
-# Run all tests
-go test ./...
-
-# Run tests with coverage
-go test -cover ./...
-
-# Run tests for a specific package
-go test ./pkg/handler/...
-```
+Direct pushes to the main repository are disabled.
 
 ## 🔒 Security
 
@@ -461,15 +439,9 @@ This project uses automated security scanning to prevent secrets from being comm
 
 See [SECURITY.md](./SECURITY.md) for detailed security guidelines.
 
-### Reporting Security Issues
-
-If you discover a security vulnerability, please **do not** open a public issue. Instead, contact the maintainers privately.
-
 ## 📄 License
 
-[License information to be added - e.g., MIT, Apache 2.0, etc.]
-
-Please check the LICENSE file in the repository root for the full license text.
+Please check the [LICENSE](LICENSE) file in the repository root for the full license text.
 
 ## 🙏 Acknowledgments
 
@@ -480,7 +452,6 @@ Please check the LICENSE file in the repository root for the full license text.
 ## 📞 Support
 
 - **Issues**: Open an issue on GitHub
-- **Documentation**: Check the Swagger UI at `/swagger` when running locally
 - **Questions**: See existing issues or open a new one
 
 ---
