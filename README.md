@@ -354,6 +354,7 @@ For detailed documentation on specific components, refer to the README files in 
 - [`pkg/signaling-platform/README.md`](pkg/signaling-platform/README.md) - Signaling platform integration guide
 - [`docs/README.md`](docs/README.md) - API documentation generation and Swagger setup
 - [`cmd/doordarshan-kendra/README.md`](cmd/doordarshan-kendra/README.md) - Application bootstrap and dependency injection
+- [`docs/system-design.md`](docs/system-design.md) - System design documentation and architecture decisions
 
 ## 📚 API Documentation
 
